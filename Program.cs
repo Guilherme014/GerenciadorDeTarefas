@@ -6,10 +6,6 @@ namespace Projeto_lista_de_afazeres
 {
     class Program
     {
-
-
-
-        
         static List<TaskItem> tarefas = new List<TaskItem>();
         static void SalvarListaEmJSON()
         {
@@ -19,10 +15,19 @@ namespace Projeto_lista_de_afazeres
 
         static void CarregarListaDeJSON()
         {
-            if (File.Exists("Tarefas.json"))
+            try
             {
-                string json = File.ReadAllText("Tarefas.json");
-                tarefas = JsonSerializer.Deserialize<List<TaskItem>>(json) ?? new List<TaskItem>();
+                if (File.Exists("Tarefas.json"))
+                {
+                    string json = File.ReadAllText("Tarefas.json");
+                    tarefas = JsonSerializer.Deserialize<List<TaskItem>>(json) ?? new List<TaskItem>();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro: {ex.Message}");
+                
             }
         }
 
@@ -35,6 +40,19 @@ namespace Projeto_lista_de_afazeres
             }
             return true;
         }
+
+        static bool SolucaoTry(out int numero)
+        {
+            bool deuCerto = int.TryParse(Console.ReadLine(), out numero);
+
+            if (!deuCerto)
+            {
+                Console.WriteLine("Digite um número válido.");
+            }
+
+            return deuCerto;
+        }
+
         static void AdicionarTarefa()
         {
             Console.Write("Nome da tarefa: ");
@@ -52,14 +70,18 @@ namespace Projeto_lista_de_afazeres
 
         }
 
-        static void ListarTarefas()
+        static void ListarTarefas(bool pausarNoFinal = true)
         {
             Console.WriteLine("tarefas: ");
             if (tarefas.Count < 1)
             {
                 Console.WriteLine("Você não tem nenhuma tarefa!");
-                Console.WriteLine("Pressione qualquer botao para continuar...");
-                Console.ReadKey();
+
+                if (pausarNoFinal)
+                {
+                    Console.WriteLine("Pressione qualquer botao para continuar...");
+                    Console.ReadKey();
+                }
                 return;
             }
             int contador = 0;
@@ -68,25 +90,27 @@ namespace Projeto_lista_de_afazeres
                 contador++;
                 Console.WriteLine($"{contador} - {t.Nome}  (concluido? - {t.Concluida})");
             }
-            Console.WriteLine("Pressione qualquer botao para continuar...");
-            Console.ReadKey();
+            if (pausarNoFinal)
+            {
+                Console.WriteLine("Pressione qualquer botao para continuar...");
+                Console.ReadKey();
+            }
+
+           
         }
 
         static void EditarTarefa()
         {
             Console.WriteLine("Editando tarefa...");
 
-            ListarTarefas();
+            ListarTarefas(false);
             if (tarefas.Count == 0) return;
 
-            /*for(int i = 0; i < tarefas.Count; i++)
-            {
-                Console.WriteLine($"{i} - {tarefas[i].Nome}");
-            }
-            */
-
             Console.WriteLine("Escolha a tarefa: ");
-            int editar = int.Parse(Console.ReadLine()) - 1;
+            int editar;
+            if (!SolucaoTry(out editar)) return;
+
+            editar -= 1;
             if (!SolucaoErro(editar))
             {
                 return;
@@ -100,27 +124,32 @@ namespace Projeto_lista_de_afazeres
 
         static void ConcluirTarefa()
         {
-            ListarTarefas();
+            ListarTarefas(false);
             if (tarefas.Count == 0) return;
+
             Console.WriteLine("Escolha sua tarefa: ");
-            int conclu = int.Parse(Console.ReadLine()) - 1;
-            if (!SolucaoErro(conclu))
-            {
-                return;
-            }
+
+            int conclu;
+            if (!SolucaoTry(out conclu)) return;
+
+            conclu -= 1;
+            if (!SolucaoErro(conclu)) return;
             tarefas[conclu].Concluida = true;
             SalvarListaEmJSON();
             Console.WriteLine($"{tarefas[conclu].Nome} - concluida");
             Console.WriteLine("Pressione qualquer tecla para voltar...");
             Console.ReadKey();
-
         }
+
+    
         static void ExcluirTarefa()
         {
-            ListarTarefas();
+            ListarTarefas(false);
             if (tarefas.Count == 0) return;
             Console.WriteLine("Escolha uma tarefa para deletar: ");
-            int exclu = int.Parse(Console.ReadLine()) - 1;
+            int exclu;
+            if (!SolucaoTry(out exclu)) return;
+            exclu -= 1;
             if (!SolucaoErro(exclu))
             {
                 return;
@@ -190,7 +219,7 @@ namespace Projeto_lista_de_afazeres
 
             
         
-        
+
         }
     }
 }
