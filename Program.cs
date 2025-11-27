@@ -6,14 +6,14 @@ namespace Projeto_lista_de_afazeres
 {
     class Program
     {
-        static List<TaskItem> tarefas = new List<TaskItem>();
-        static void SalvarListaEmJSON()
+        static List<TaskItem> tarefas = new List<TaskItem>(); // cria uma lista com base na classe "TaskItem"
+        static void SalvarListaEmJSON() //cria o arquivo "Tarefas.json"
         {
             var json = JsonSerializer.Serialize(tarefas, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText("Tarefas.json", json);
         }
 
-        static void CarregarListaDeJSON()
+        static void CarregarListaDeJSON() 
         {
             try
             {
@@ -31,7 +31,7 @@ namespace Projeto_lista_de_afazeres
             }
         }
 
-        static bool SolucaoErro(int variavel)
+        static bool SolucaoErro(int variavel) //cria uma função para solução de erros de indice inválido
         {
             if (variavel < 0 || variavel >= tarefas.Count)
             {
@@ -41,7 +41,7 @@ namespace Projeto_lista_de_afazeres
             return true;
         }
 
-        static bool SolucaoTry(out int numero)
+        static bool SolucaoTry(out int numero) //outra solução de erro para se caso o campo nao for um numero
         {
             bool deuCerto = int.TryParse(Console.ReadLine(), out numero);
 
@@ -52,7 +52,7 @@ namespace Projeto_lista_de_afazeres
 
             return deuCerto;
         }
-
+        //a função para adicionar uma tarefa
         static void AdicionarTarefa()
         {
             Console.Write("Nome da tarefa: ");
@@ -69,7 +69,7 @@ namespace Projeto_lista_de_afazeres
             Console.ReadKey();
 
         }
-
+        //a função criada para listar as tarefas
         static void ListarTarefas(bool pausarNoFinal = true)
         {
             Console.WriteLine("tarefas: ");
@@ -77,7 +77,7 @@ namespace Projeto_lista_de_afazeres
             {
                 Console.WriteLine("Você não tem nenhuma tarefa!");
 
-                if (pausarNoFinal)
+                if (pausarNoFinal) //se o parametro dado for true, ele cai dentro desse if e faz a pausa
                 {
                     Console.WriteLine("Pressione qualquer botao para continuar...");
                     Console.ReadKey();
@@ -98,7 +98,7 @@ namespace Projeto_lista_de_afazeres
 
            
         }
-
+        //função pra edtitar as tarefas (trocar nome) 
         static void EditarTarefa()
         {
             Console.WriteLine("Editando tarefa...");
@@ -111,7 +111,7 @@ namespace Projeto_lista_de_afazeres
             if (!SolucaoTry(out editar)) return;
 
             editar -= 1;
-            if (!SolucaoErro(editar))
+            if (!SolucaoErro(editar))   //solução de erro que verifica se a variavel passada como parametro é um numero
             {
                 return;
             }
@@ -122,15 +122,17 @@ namespace Projeto_lista_de_afazeres
             Console.ReadKey();
         }
 
+        //função para concluir uma tarefa existente
+
         static void ConcluirTarefa()
         {
-            ListarTarefas(false);
+            ListarTarefas(false); //false para tirar a pausa da função
             if (tarefas.Count == 0) return;
 
             Console.WriteLine("Escolha sua tarefa: ");
 
             int conclu;
-            if (!SolucaoTry(out conclu)) return;
+            if (!SolucaoTry(out conclu)) return; //verificação se a variavel inserida é um numero
 
             conclu -= 1;
             if (!SolucaoErro(conclu)) return;
@@ -141,7 +143,7 @@ namespace Projeto_lista_de_afazeres
             Console.ReadKey();
         }
 
-    
+        //função pra exlcuir uma tarefa existente
         static void ExcluirTarefa()
         {
             ListarTarefas(false);
